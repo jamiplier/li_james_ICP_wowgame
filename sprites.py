@@ -2,7 +2,7 @@ import pygame as pg
 from pygame.sprite import Sprite
 from os import path
 from settings import *
-
+from utils import *
 vec = pg.math.Vector2
 
 def collide_hit_rect(one,two):
@@ -36,8 +36,11 @@ class Player(Sprite):
         self.groups = game.all_sprites
         Sprite.__init__(self, self.groups)
         self.game = game
+        self.spritesheet = Spritesheet(path.join(self.game.img_dir, "sprite_sheet.png"))
         self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(WHITE)
+        self.image = self.spritesheet.get_image(0,0, TILESIZE, TILESIZE)
+        self.image.set_colorkey(BLACK)
+        #self.image.fill(WHITE)
         self.rect = self.image.get_rect()
         self.hit_rect = PLAYER_HIT_RECT #will determine our hitbox for walls
         self.vel = vec(0,0)

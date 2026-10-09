@@ -65,14 +65,24 @@ class Game:
                 if self.playing:
                     self.playing = False #creates a quit mechanism 
                 self.running = False
-    
+
+    def draw_text(self,text, size, color, x, y):
+        font_name = pg.font.match_font('arial')
+        font = pg.font.Font(font_name, size)
+        text_surface = font.render(text, True, color)
+        text_rect = text_surface.get_rect()
+        text_rect.midtop = (x,y)
+        self.screen.blit(text_surface, text_rect)
 
     def update(self):
         self.all_sprites.update()
-
+    
     def draw(self):
         self.screen.fill(BGCOLOR)
         self.all_sprites.draw(self.screen) #draws our player
+        #this order matters, first things are on the bottom because they are the 'first' to be drawn
+        #the last lines in this method are drawn on top
+        self.draw_text("Frames per second: " + str(floor(1/self.dt)), 24, WHITE, WIDTH/2, HEIGHT/4)
         pg.display.flip()
 
 
