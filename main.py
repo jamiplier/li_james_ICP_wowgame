@@ -41,7 +41,7 @@ class Game:
         self.running = True
         self.playing = True
         self.clock = pg.time.Clock()
-    def load_data(self,map):
+    def load_data(self,map): #function responsible for opening up paths 
         self.game_dir = path.dirname(__file__)
         self.img_dir = path.join(self.game_dir, 'images')#join one path to another
         self.snd_dir = path.join(self.game_dir, 'audio')
@@ -53,7 +53,7 @@ class Game:
         self.all_mobs = pg.sprite.Group()
         #self.player = Player(self,12,12) 
         self.cactus = Wall(self,10,10)
-        self.enemy = Mob(self,12,12)
+        #self.enemy = Mob(self,12,12)
 
         for row, tiles in enumerate(self.map.data):
             for col, tile, in enumerate(tiles):
@@ -63,6 +63,11 @@ class Game:
             for col, tile, in enumerate(tiles):
                 if tile == 'P':
                     Player(self,col,row)
+        for row, tiles in enumerate(self.map.data):
+            for col, tile, in enumerate(tiles):
+                if tile == 'M':
+                    Mob(self,col,row)
+        
         #self is game 
         #self.all_sprites.add(self.player) #draws the player
 
