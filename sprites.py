@@ -37,7 +37,7 @@ class Player(Sprite):
         self.groups = game.all_sprites
         Sprite.__init__(self, self.groups)
         self.game = game
-        self.spritesheet = Spritesheet(path.join(self.game.img_dir, "sprite_sheet.png")) #supposed to connect our game with the files
+        self.spritesheet = Spritesheet(path.join(self.game.img_dir, "sprite_sheet.png")) #supposed to connect our game with the files of sprite sheet
         self.load_images()
         self.image = pg.Surface((TILESIZE, TILESIZE))
         self.image = self.spritesheet.get_image(0,0, TILESIZE, TILESIZE)
@@ -56,7 +56,7 @@ class Player(Sprite):
   
     def get_keys(self):
         #reset v to zero
-        #listen for events
+        #listen for events like pressing the key
         #self.vx, self.vy = 0,0
         self.vel = vec(0,0)
         keys = pg.key.get_pressed() #the left key
@@ -81,6 +81,7 @@ class Player(Sprite):
         now = pg.time.get_ticks()
         if self.dir == "none":
             if now - self.last_update > 350: #this periodically checks if we have made an update
+                #if it has been 350ms and we haven't made an update, the game updates the sprite to make an animation
                 self.last_update = now
                 self.current_frame = (self.current_frame + 1) % len(self.idle_frames)
                 bottom = self.rect.bottom
@@ -89,7 +90,7 @@ class Player(Sprite):
                 self.rect = self.image.get_rect()
                 self.rect.bottom = bottom
     def load_images(self):
-        self.idle_frames = [self.spritesheet.get_image(0,0,TILESIZE,TILESIZE),
+        self.idle_frames = [self.spritesheet.get_image(0,0,TILESIZE,TILESIZE), #checks the different locations of the spritesheet to generate animation
                             self.spritesheet.get_image(TILESIZE,0,TILESIZE,TILESIZE)]
         self.run_frames = [self.spritesheet.get_image(0,0,TILESIZE,TILESIZE),
                            self.spritesheet.get_image(TILESIZE, 0,TILESIZE,TILESIZE)]
@@ -101,7 +102,7 @@ class Player(Sprite):
 
         self.rect.center = self.pos
         self.pos += self.vel * self.game.dt #about framerates and updating every frame
-        self.hit_rect.centerx = self.pos.x
+        self.hit_rect.centerx = self.pos.x #i believe this begins the collision checking process during the game loop
         collide_with_walls(self, self.game.all_walls, 'x')
         self.hit_rect.centery = self.pos.y
         collide_with_walls(self,self.game.all_walls, 'y')
@@ -127,7 +128,7 @@ class Mob(Sprite):
         self.groups = game.all_sprites, game.all_mobs
         Sprite.__init__(self,self.groups)
         self.game = game
-        self.spritesheet = Spritesheet(path.join(self.game.img_dir, "sprite_sheet.png"))
+        self.spritesheet = Spritesheet(path.join(self.game.img_dir, "sprite_sheet.png")) #shares the same sprite sheet as the player
         self.load_images()
         self.image = pg.Surface((TILESIZE,TILESIZE))
         #self.image.fill(RED)
@@ -148,7 +149,7 @@ class Mob(Sprite):
         self.idle_frames = [self.spritesheet.get_image(64,0,TILESIZE, TILESIZE),
                             self.spritesheet.get_image(96,0,TILESIZE, TILESIZE)
                             ]
-        self.run_frames = [self.spritesheet.get_image(0,0,TILESIZE, TILESIZE),
+        self.run_frames = [self.spritesheet.get_image(0,0,TILESIZE, TILESIZE), #similar mechanic
                             self.spritesheet.get_image(TILESIZE,0,TILESIZE, TILESIZE)
                             ]    
     def animate(self):
@@ -164,7 +165,7 @@ class Mob(Sprite):
                     self.rect.bottom = bottom
             elif self.dir == "right":
                 pass
-'''
+
     def chase(self, obj):
         if self.pos.x < obj.pos.x:
             self.vel.x = self.speed
@@ -194,4 +195,3 @@ class Mob(Sprite):
         collide_with_walls(self, self.game.all_walls, 'y')
         self.rect.center = self.hit_rect.center
             
-'''

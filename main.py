@@ -32,7 +32,7 @@ from utils import *
 #using a class to organize objects
 #e.g. factory is the class, water bottle is the product, the object
 class Game:
-    def __init__(self): #means initiate, to allow properties to be defined
+    def __init__(self): #means initiate, to allow properties to be defined and runs first
         pg.init() #initialize pygame
         pg.mixer.init() # initialize the pygame sound
         self.screen = pg.display.set_mode((WIDTH,HEIGHT)) #create the canvas
@@ -41,20 +41,20 @@ class Game:
         self.running = True
         self.playing = True
         self.clock = pg.time.Clock()
-    def load_data(self,map): #function responsible for opening up paths 
+    def load_data(self,map): #function responsible for opening up paths so we can access all the data
         self.game_dir = path.dirname(__file__)
         self.img_dir = path.join(self.game_dir, 'images')#join one path to another
         self.snd_dir = path.join(self.game_dir, 'audio')
         self.map = Map(path.join(self.game_dir,map))
-    def new(self):
+    def new(self): #where all our sprites and objects get instantiated
         self.load_data('level1.txt')
         self.all_sprites = pg.sprite.Group()
         self.all_walls = pg.sprite.Group()
         self.all_mobs = pg.sprite.Group()
         #self.player = Player(self,12,12) 
-        self.cactus = Wall(self,10,10)
+        #self.cactus = Wall(self,10,10)
         #self.enemy = Mob(self,12,12)
-
+        #based on the tilemap generates the position for everything
         for row, tiles in enumerate(self.map.data):
             for col, tile, in enumerate(tiles):
                 if tile == '1':
@@ -62,7 +62,7 @@ class Game:
         for row, tiles in enumerate(self.map.data):
             for col, tile, in enumerate(tiles):
                 if tile == 'P':
-                    Player(self,col,row)
+                    self.player = Player(self,col,row)
         for row, tiles in enumerate(self.map.data):
             for col, tile, in enumerate(tiles):
                 if tile == 'M':
@@ -71,7 +71,7 @@ class Game:
         #self is game 
         #self.all_sprites.add(self.player) #draws the player
 
-    def run(self):
+    def run(self): #the core loop of the game, checking events, updating, and drawing our sprites
         self.playing = True
         while self.playing:
             self.dt = self.clock.tick(FPS) / 1000 
@@ -79,14 +79,14 @@ class Game:
             self.update() #allows the game to update all movements and player position
             self.draw()
 
-    def events(self):
+    def events(self): #handles our user input
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 if self.playing:
                     self.playing = False #creates a quit mechanism 
                 self.running = False
 
-    def draw_text(self,text, size, color, x, y):
+    def draw_text(self,text, size, color, x, y): #a method in which we can print text on the screen
         font_name = pg.font.match_font('arial')
         font = pg.font.Font(font_name, size)
         text_surface = font.render(text, True, color)
@@ -94,10 +94,10 @@ class Game:
         text_rect.midtop = (x,y)
         self.screen.blit(text_surface, text_rect)
 
-    def update(self):
+    def update(self): #refreshes to make sure our sprites are moving
         self.all_sprites.update()
     
-    def draw(self):
+    def draw(self): #this is the method that draws everything including player, walls, and all
         self.screen.fill(BGCOLOR)
         self.all_sprites.draw(self.screen) #draws our player
         #this order matters, first things are on the bottom because they are the 'first' to be drawn
