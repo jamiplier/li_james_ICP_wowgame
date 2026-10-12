@@ -7,6 +7,22 @@ Input (events): keyboard, mouse, voice, power button, eye tracking, camera, gyro
 Process: cursor position, position of the player, score, enemy
 
 Output: Graphics  Sounds: jump, power up, walking, haptics (controller shaking)
+
+
+Game: CS2
+
+Goals:
+- plant the bomb and make sure it goes off
+- diffuse the bomb
+- eliminate all enemies
+
+Rules:
+- cannot leave map
+- cannot see where other players are without audio cues
+- you have to plant the bomb
+- win in thirteen rounds
+
+
 '''
 import pygame as pg
 from os import path
@@ -47,7 +63,6 @@ class Game:
             for col, tile, in enumerate(tiles):
                 if tile == 'P':
                     Player(self,col,row)
-        # puts the player at 0,0, we're putting self in here because its the argument for game
         #self is game 
         #self.all_sprites.add(self.player) #draws the player
 
