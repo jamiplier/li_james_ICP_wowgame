@@ -45,15 +45,20 @@ class Game:
         self.game_dir = path.dirname(__file__)
         self.img_dir = path.join(self.game_dir, 'images')#join one path to another
         self.snd_dir = path.join(self.game_dir, 'audio')
+        self.pickup_snd = pg.mixer.Sound(path.join(self.snd_dir, "wind1.wav"))
         self.map = Map(path.join(self.game_dir,map))
+
+        
     def new(self): #where all our sprites and objects get instantiated
         self.load_data('level1.txt')
         self.all_sprites = pg.sprite.Group()
         self.all_walls = pg.sprite.Group()
         self.all_mobs = pg.sprite.Group()
+        self.all_coins = pg.sprite.Group()
         #self.player = Player(self,12,12) 
         #self.cactus = Wall(self,10,10)
         #self.enemy = Mob(self,12,12)
+
         #based on the tilemap generates the position for everything
         for row, tiles in enumerate(self.map.data):
             for col, tile, in enumerate(tiles):
@@ -62,31 +67,38 @@ class Game:
         for row, tiles in enumerate(self.map.data):
             for col, tile, in enumerate(tiles):
                 if tile == 'P':
-                    self.player = Player(self,col,row)
+                    self.player = Player(self,col,row) #we need this kind of instantiation to access all the variables within
         for row, tiles in enumerate(self.map.data):
             for col, tile, in enumerate(tiles):
                 if tile == 'M':
                     Mob(self,col,row)
-        
+        for row, tiles in enumerate(self.map.data):
+            for col, tile, in enumerate(tiles):
+                if tile == 'C':
+                    self.c = Coin(self,col,row)
+        #have background music. The loops is equal to negative one to make it infinite
+        #pg.mixer.music.load(path.join(self.snd_dir, ""))
+        #pg.mixer.music.play(loops=-1)
+
         #self is game 
-        #self.all_sprites.add(self.player) #draws the player
+        #self.all_sprites.add(self.player) #draws the player and was shifted later
 
     def run(self): #the core loop of the game, checking events, updating, and drawing our sprites
         self.playing = True
         while self.playing:
             self.dt = self.clock.tick(FPS) / 1000 
-            self.events()
+            self.events() #this checks for user input and also quitting
             self.update() #allows the game to update all movements and player position
-            self.draw()
+            self.draw() #this handles the main graphics in the front end, update handles the back end logic
 
-    def events(self): #handles our user input
+    def events(self): #quit mechanism
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 if self.playing:
                     self.playing = False #creates a quit mechanism 
                 self.running = False
 
-    def draw_text(self,text, size, color, x, y): #a method in which we can print text on the screen
+    def draw_text(self,text, size, color, x, y): #a method in which we can print text on the screen with arial font and customizable position and size with the parameters
         font_name = pg.font.match_font('arial')
         font = pg.font.Font(font_name, size)
         text_surface = font.render(text, True, color)
@@ -103,14 +115,15 @@ class Game:
         #this order matters, first things are on the bottom because they are the 'first' to be drawn
         #the last lines in this method are drawn on top
         self.draw_text("Frames per second: " + str(floor(1/self.dt)), 24, WHITE, WIDTH/2, HEIGHT/4)
+        self.draw_text("Coins:" + str(self.player.coins), 24, WHITE, WIDTH/2, HEIGHT/4 + 20)
         pg.display.flip()
 
 
 
 if __name__ == "__main__": # if 'main' is the name of file the underscores indicate something is special
-    g = Game()
+    g = Game() #instantiation
      
 
 while g.running:
     g.new()
-    g.run() #makes sure the game actually runs when we want it to run
+    g.run() #makes sure the game actually runs when we want it to run and continues to keep running and refreshing as we keep the game running

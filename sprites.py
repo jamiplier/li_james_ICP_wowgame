@@ -6,7 +6,7 @@ from utils import *
 
 vec = pg.math.Vector2
 
-def collide_hit_rect(one,two):
+def collide_hit_rect(one,two): #checks if one thing is colliding with some other thing
     return one.hit_rect.colliderect(two.rect)
 
 def collide_with_walls(sprite,group,dir):#function because a lotta things will use this
@@ -51,6 +51,7 @@ class Player(Sprite):
         self.last_update = 0
         self.current_frame = 0
         self.dir = "none"
+        self.coins = 0
         print('player instantiated')
         print(self.pos)
   
@@ -99,7 +100,10 @@ class Player(Sprite):
     def update(self):
         self.get_keys()
         self.animate()
-
+        hits = pg.sprite.spritecollide(self,self.game.all_coins, True)
+        if hits:
+            self.coins += 1
+            self.game.pickup_snd.play() #play the audio of the cue
         self.rect.center = self.pos
         self.pos += self.vel * self.game.dt #about framerates and updating every frame
         self.hit_rect.centerx = self.pos.x #i believe this begins the collision checking process during the game loop
@@ -165,7 +169,7 @@ class Mob(Sprite):
                     self.rect.bottom = bottom
             elif self.dir == "right":
                 pass
-
+    #used autocomplete by creating a chase method using pos vectors and obj as a parameter
     def chase(self, obj):
         if self.pos.x < obj.pos.x:
             self.vel.x = self.speed
@@ -194,4 +198,24 @@ class Mob(Sprite):
         self.hit_rect.centery = self.pos.y
         collide_with_walls(self, self.game.all_walls, 'y')
         self.rect.center = self.hit_rect.center
-            
+
+class Coin(Sprite):
+    def __init__ (self, game,x,y): #reuse the init from the other classes for now
+        coins_collected = 0 #a amethod for collection
+        self.groups = game.all_sprites, game.all_coins
+        Sprite.__init__(self,self.groups)
+        self.game = game
+        self.image = pg.Surface((TILESIZE,TILESIZE))
+        self.image.fill(YELLOW)
+        self.rect = self.image.get_rect()
+        self.image.set_colorkey(BLACK)
+        self.vx, self.vy = 0,0
+        self.x = x * TILESIZE
+        self.y = y * TILESIZE
+        self.rect.x = self.x
+        self.rect.y = self.y
+    def update(self):
+        pass
+    
+
+
