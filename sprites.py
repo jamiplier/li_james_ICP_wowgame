@@ -60,8 +60,8 @@ class Player(Sprite):
         #listen for events like pressing the key
         #self.vx, self.vy = 0,0
         self.vel = vec(0,0)
-        keys = pg.key.get_pressed() #the left key
-        if keys[pg.K_LEFT] or keys[pg.K_a]:
+        keys = pg.key.get_pressed() 
+        if keys[pg.K_LEFT] or keys[pg.K_a]: #the left key
             self.vel.x = -PLAYER_SPEED
             #self.vx = -PLAYER_SPEED
         if keys[pg.K_RIGHT] or keys[pg.K_d]:
@@ -103,7 +103,8 @@ class Player(Sprite):
         hits = pg.sprite.spritecollide(self,self.game.all_coins, True)
         if hits:
             self.coins += 1
-            self.game.pickup_snd.play() #play the audio of the cue
+            self.game.pickup_snd.play() #play the audio 
+            self.game.score += 1
         self.rect.center = self.pos
         self.pos += self.vel * self.game.dt #about framerates and updating every frame
         self.hit_rect.centerx = self.pos.x #i believe this begins the collision checking process during the game loop

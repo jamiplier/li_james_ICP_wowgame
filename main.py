@@ -41,14 +41,29 @@ class Game:
         self.running = True
         self.playing = True
         self.clock = pg.time.Clock()
+        self.high_score  = 0
+        self.score = 0
     def load_data(self,map): #function responsible for opening up paths so we can access all the data
         self.game_dir = path.dirname(__file__)
+        self.game_save_file = path.join(self.game_dir, "highscore.txt")
         self.img_dir = path.join(self.game_dir, 'images')#join one path to another
         self.snd_dir = path.join(self.game_dir, 'audio')
         self.pickup_snd = pg.mixer.Sound(path.join(self.snd_dir, "wind1.wav"))
         self.map = Map(path.join(self.game_dir,map))
 
-        
+        try:
+            with open(self.game_save_file,'x', encoding = "utf-8") as file:
+                file.write("hello world")
+            print("file created successfully!")
+        except FileExistsError:
+            print("file already exists")
+
+        with open(self.game_save_file, 'r') as file:
+            try:
+                self.high_score = int(file.read()) #type casting, we had issues before b/c we didn't type cast
+            except:
+                self.high_score = 0
+                print("high score is zero")
     def new(self): #where all our sprites and objects get instantiated
         self.load_data('level1.txt')
         self.all_sprites = pg.sprite.Group()
@@ -94,8 +109,16 @@ class Game:
     def events(self): #quit mechanism
         for event in pg.event.get():
             if event.type == pg.QUIT:
+                if self.score > self.high_score:
+                    try: #it's trying to write the file here
+                        #with open allows for file handling including read, writing, appending, etc
+                        with open(path.join(self.game_dir, self.game_save_file),'w') as file: #every time we quit the game, we want to save a new highscore
+                            file.write(str(self.score)) #once again, we needed typecasting
+
+                    except FileNotFoundError: # if it doesn't work, then it prints a message, helps with debugging
+                        print("unable to write file")
                 if self.playing:
-                    self.playing = False #creates a quit mechanism 
+                        self.playing = False #creates a quit mechanism 
                 self.running = False
 
     def draw_text(self,text, size, color, x, y): #a method in which we can print text on the screen with arial font and customizable position and size with the parameters
@@ -116,6 +139,8 @@ class Game:
         #the last lines in this method are drawn on top
         self.draw_text("Frames per second: " + str(floor(1/self.dt)), 24, WHITE, WIDTH/2, HEIGHT/4)
         self.draw_text("Coins:" + str(self.player.coins), 24, WHITE, WIDTH/2, HEIGHT/4 + 20)
+        self.draw_text("Score:" + str(self.score), 24, WHITE, WIDTH/2, HEIGHT/4 + 40)
+        self.draw_text("High Score" + str(self.high_score), 24, WHITE, WIDTH/2, HEIGHT/4 + 60)
         pg.display.flip()
 
 
