@@ -70,6 +70,7 @@ class Game:
         self.all_walls = pg.sprite.Group()
         self.all_mobs = pg.sprite.Group()
         self.all_coins = pg.sprite.Group()
+        self.all_particles = pg.sprite.Group()
         #self.player = Player(self,12,12) 
         #self.cactus = Wall(self,10,10)
         #self.enemy = Mob(self,12,12)
@@ -90,7 +91,9 @@ class Game:
         for row, tiles in enumerate(self.map.data):
             for col, tile, in enumerate(tiles):
                 if tile == 'C':
-                    self.c = Coin(self,col,row)
+                    Coin(self,col,row)
+
+    
         #have background music. The loops is equal to negative one to make it infinite
         #pg.mixer.music.load(path.join(self.snd_dir, ""))
         #pg.mixer.music.play(loops=-1)

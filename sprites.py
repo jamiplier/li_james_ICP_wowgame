@@ -102,6 +102,9 @@ class Player(Sprite):
         self.animate()
         hits = pg.sprite.spritecollide(self,self.game.all_coins, True)
         if hits:
+            for i in range(10):
+
+                Particle(self.game, hits[0].pos.x, hits[0].pos.y)
             self.coins += 1
             self.game.pickup_snd.play() #play the audio 
             self.game.score += 1
@@ -127,7 +130,28 @@ class Wall(Sprite):
         self.y = y * TILESIZE
         self.rect.x = self.x
         self.rect.y = self.y
-
+class Particle(Sprite):
+    def __init__(self,game,x,y):
+        self.groups = game.all_sprites, game.all_particles
+        Sprite.__init__(self,self.groups)
+        self.game = game
+        self.image = pg.Surface((TILESIZE/8,TILESIZE/8))
+        self.image.fill(RED)
+        self.rect = self.image.get_rect()
+        self.vx, self.vy = 0,0
+        self.x = x 
+        self.y = y 
+        self.speed = 25
+        self.rect.x = self.x
+        self.rect.y = self.y
+        self.countdown = Cooldown(5000)
+        self.countdown.event_time = floor(pg.time.get_ticks()/1000)
+    def update(self):
+        self.countdown.ticking()
+        self.rect.x += self.speed
+        self.rect.y += self.speed
+        if self.countdown.delta > 3:
+            self.kill()
 class Mob(Sprite):
     def __init__(self,game,x,y):
         self.groups = game.all_sprites, game.all_mobs
@@ -207,16 +231,20 @@ class Coin(Sprite):
         Sprite.__init__(self,self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE,TILESIZE))
-        self.image.fill(YELLOW)
         self.rect = self.image.get_rect()
+        self.image.fill(YELLOW)
+        
         self.image.set_colorkey(BLACK)
-        self.vx, self.vy = 0,0
-        self.x = x * TILESIZE
-        self.y = y * TILESIZE
-        self.rect.x = self.x
-        self.rect.y = self.y
+        self.pos = vec(x*TILESIZE, y*TILESIZE)
+
+
+        self.rect.x = self.pos.x
+        self.rect.x = self.pos.y
+
     def update(self):
-        pass
+        self.rect.x = self.pos.x
+        self.rect.y = self.pos.y
+        
     
 
 
