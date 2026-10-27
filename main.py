@@ -140,7 +140,7 @@ class Game:
         self.all_sprites.draw(self.screen) #draws our player
         #this order matters, first things are on the bottom because they are the 'first' to be drawn
         #the last lines in this method are drawn on top
-        self.draw_text("Frames per second: " + str(floor(1/self.dt)), 24, WHITE, WIDTH/2, HEIGHT/4)
+        self.draw_text("Frames per second: " + str(floor(1/self.dt)), 24, WHITE, WIDTH/2, HEIGHT/4) #all the different texts 
         self.draw_text("Coins:" + str(self.player.coins), 24, WHITE, WIDTH/2, HEIGHT/4 + 20)
         self.draw_text("Score:" + str(self.score), 24, WHITE, WIDTH/2, HEIGHT/4 + 40)
         self.draw_text("High Score" + str(self.high_score), 24, WHITE, WIDTH/2, HEIGHT/4 + 60)

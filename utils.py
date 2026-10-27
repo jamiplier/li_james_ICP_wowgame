@@ -18,25 +18,21 @@ class Spritesheet:
     def __init__(self, filename):
         self.spritesheet = pg.image.load(filename).convert() #loading an image, converting png to something pygame can use
  
-    def get_image(self,x,y,width,height):
+    def get_image(self,x,y,width,height): #gets images from the Spritesheet and scales it correctly so we can draw and use our image from the spritesheet
         image = pg.Surface((width,height))
         image.blit(self.spritesheet, (0,0), (x,y,width,height))
         new_image = pg.transform.scale(image, (width,height))
         image = new_image
         return image
 
-class Cooldown: 
-    def __init__(self, time):
-        self.start_time = 0 
-        self.time = time
-        self.current = self.time
+
+class Cooldown: # what checks time between different events
+    def __init__(self):
+        self.event_time = 0
+        self.current_time  = 0
+        self.delta = 0
     def ticking(self):
         self.current_time = floor((pg.time.get_ticks())/1000)
-        self.delta = self.current_time = self.event_time
+        self.delta = self.current_time - self.event_time #when we check how much time has passed
     def start(self):
         self.start_time = pg.time.get_ticks()
-    def ready(self):
-        self.current_time = pg.time.get_ticks()
-        if self.current_time - self.start_time >= self.time:
-            return True
-        return False

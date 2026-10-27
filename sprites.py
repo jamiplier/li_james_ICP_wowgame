@@ -3,7 +3,7 @@ from pygame.sprite import Sprite
 from os import path
 from settings import *
 from utils import *
-
+from random import randint
 vec = pg.math.Vector2
 
 def collide_hit_rect(one,two): #checks if one thing is colliding with some other thing
@@ -100,11 +100,11 @@ class Player(Sprite):
     def update(self):
         self.get_keys()
         self.animate()
-        hits = pg.sprite.spritecollide(self,self.game.all_coins, True)
+        hits = pg.sprite.spritecollide(self,self.game.all_coins, True) #this hits checks to see if we collided with any coin
         if hits:
-            for i in range(10):
-
+            for i in range(10): # we want to spawn 10
                 Particle(self.game, hits[0].pos.x, hits[0].pos.y)
+            print("i've been created")
             self.coins += 1
             self.game.pickup_snd.play() #play the audio 
             self.game.score += 1
@@ -135,23 +135,27 @@ class Particle(Sprite):
         self.groups = game.all_sprites, game.all_particles
         Sprite.__init__(self,self.groups)
         self.game = game
-        self.image = pg.Surface((TILESIZE/8,TILESIZE/8))
-        self.image.fill(RED)
+        self.image = pg.Surface((TILESIZE,TILESIZE))
+        self.image.fill(WHITE)
         self.rect = self.image.get_rect()
-        self.vx, self.vy = 0,0
-        self.x = x 
-        self.y = y 
-        self.speed = 25
-        self.rect.x = self.x
-        self.rect.y = self.y
-        self.countdown = Cooldown(5000)
+        self.vel = vec(randint(-180,180), randint(-180,180)) #within a vector find a random direction
+        self.pos = vec(x,y)
+        self.speed = 5 #each particle moves at different speeds too
+        self.countdown = Cooldown()
         self.countdown.event_time = floor(pg.time.get_ticks()/1000)
+        print(self.pos.x)
+        print(self.pos.y)
     def update(self):
         self.countdown.ticking()
-        self.rect.x += self.speed
-        self.rect.y += self.speed
-        if self.countdown.delta > 3:
+        self.pos += self.vel * self.speed * self.game.dt 
+        
+        #helps us calculate the direction and speed over time to update pos
+        if self.countdown.delta > .73: #should the particle stay alive for 2 seconds, we make it disappear by using countdown
             self.kill()
+            print("died")
+
+        self.rect.x = self.pos.x
+        self.rect.y = self.pos.y
 class Mob(Sprite):
     def __init__(self,game,x,y):
         self.groups = game.all_sprites, game.all_mobs
