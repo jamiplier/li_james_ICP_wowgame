@@ -118,7 +118,7 @@ class Player(Sprite):
         
 
 class Wall(Sprite):
-    def __init__(self,game,x,y):
+    def __init__(self,game,x,y): #a pretty much standard copy of other sprite groups but we group it into all_walls which has its own set of attributes
         self.groups = game.all_sprites, game.all_walls
         Sprite.__init__(self,self.groups)
         self.game = game
@@ -131,7 +131,7 @@ class Wall(Sprite):
         self.rect.x = self.x
         self.rect.y = self.y
 class Particle(Sprite):
-    def __init__(self,game,x,y):
+    def __init__(self,game,x,y): #once against, almost same thing except now we have all_particles and new variable types like vec
         self.groups = game.all_sprites, game.all_particles
         Sprite.__init__(self,self.groups)
         self.game = game
@@ -150,7 +150,7 @@ class Particle(Sprite):
         self.pos += self.vel * self.speed * self.game.dt 
         
         #helps us calculate the direction and speed over time to update pos
-        if self.countdown.delta > .73: #should the particle stay alive for 2 seconds, we make it disappear by using countdown
+        if self.countdown.delta > .73: #should the particle stay alive for .73 seconds, we make it disappear by using countdown
             self.kill()
             print("died")
 
@@ -169,7 +169,7 @@ class Mob(Sprite):
         self.rect = self.image.get_rect()
         self.speed = 100
         self.vel = vec(0,0)
-        self.pos = vec(x*TILESIZE, y*TILESIZE)
+        self.pos = vec(x*TILESIZE, y*TILESIZE) #this also shares the vec
         self.x = x * TILESIZE
         self.y = y * TILESIZE
         self.rect.x = self.x
@@ -177,7 +177,7 @@ class Mob(Sprite):
         self.dir = "none"
         self.last_update = 0
         self.current_frame = 0
-        self.hit_rect = MOB_HIT_RECT
+        self.hit_rect = MOB_HIT_RECT #our mob will be having a different hitbox than the player
     def load_images(self):
         self.idle_frames = [self.spritesheet.get_image(64,0,TILESIZE, TILESIZE),
                             self.spritesheet.get_image(96,0,TILESIZE, TILESIZE)

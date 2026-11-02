@@ -51,7 +51,7 @@ class Game:
         self.pickup_snd = pg.mixer.Sound(path.join(self.snd_dir, "wind1.wav"))
         self.map = Map(path.join(self.game_dir,map))
 
-        try:
+        try: #with making files we want to make sure we don't cause errors with the file alreadhy existing
             with open(self.game_save_file,'x', encoding = "utf-8") as file:
                 file.write("hello world")
             print("file created successfully!")
@@ -64,7 +64,7 @@ class Game:
             except:
                 self.high_score = 0
                 print("high score is zero")
-    def new(self): #where all our sprites and objects get instantiated
+    def new(self): #where all our sprites and objects get instantiated and get grouped together so we can give attributes to all of them
         self.load_data('level1.txt')
         self.all_sprites = pg.sprite.Group()
         self.all_walls = pg.sprite.Group()
@@ -109,7 +109,7 @@ class Game:
             self.update() #allows the game to update all movements and player position
             self.draw() #this handles the main graphics in the front end, update handles the back end logic
 
-    def events(self): #quit mechanism
+    def events(self): #quit mechanism and also a bit of user input
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 if self.score > self.high_score:
@@ -132,10 +132,10 @@ class Game:
         text_rect.midtop = (x,y)
         self.screen.blit(text_surface, text_rect)
 
-    def update(self): #refreshes to make sure our sprites are moving
+    def update(self): #refreshes to make sure our sprites are moving, this is mostly the back end stuff like checking for collisions or moving when we press buttons
         self.all_sprites.update()
     
-    def draw(self): #this is the method that draws everything including player, walls, and all
+    def draw(self): #this is the method that draws everything including player, walls
         self.screen.fill(BGCOLOR)
         self.all_sprites.draw(self.screen) #draws our player
         #this order matters, first things are on the bottom because they are the 'first' to be drawn
