@@ -13,7 +13,7 @@ BGCOLOR = (255,100,100)
 RED = (255,0,0)
 YELLOW = (255,255,0)
 #player settings
-PLAYER_SPEED = 300
+PLAYER_SPEED = 30
 PLAYER_HIT_RECT = pg.Rect(0,0, TILESIZE, TILESIZE)
 
 #mobsettings

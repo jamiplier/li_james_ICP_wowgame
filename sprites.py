@@ -47,11 +47,13 @@ class Player(Sprite):
         self.hit_rect = PLAYER_HIT_RECT #will determine our hitbox for walls
         self.vel = vec(0,0)
         self.pos = vec(x*TILESIZE,y*TILESIZE)
+        self.acc = vec(0,0)
         #following code is for animation
         self.last_update = 0
         self.current_frame = 0
         self.dir = "none"
         self.coins = 0
+        self.cofric = -0.1
         print('player instantiated')
         print(self.pos)
   
@@ -59,19 +61,21 @@ class Player(Sprite):
         #reset v to zero
         #listen for events like pressing the key
         #self.vx, self.vy = 0,0
-        self.vel = vec(0,0)
+        
+        self.dir = 'none'
         keys = pg.key.get_pressed() 
         if keys[pg.K_LEFT] or keys[pg.K_a]: #the left key
-            self.vel.x = -PLAYER_SPEED
+            self.acc.x = -PLAYER_SPEED
             #self.vx = -PLAYER_SPEED
         if keys[pg.K_RIGHT] or keys[pg.K_d]:
-            self.vel.x = PLAYER_SPEED
+            self.dir = 'right'
+            self.acc.x = PLAYER_SPEED
             #self.vx = PLAYER_SPEED
         if keys[pg.K_UP] or keys[pg.K_w]:
-            self.vel.y = -PLAYER_SPEED
+            self.acc.y = -PLAYER_SPEED
             #self.vy = -PLAYER_SPEED
         if keys[pg.K_DOWN] or keys[pg.K_s]:
-            self.vel.y = PLAYER_SPEED
+            self.acc.y = PLAYER_SPEED
             #self.vy = PLAYER_SPEED
         if self.vel.x != 0 and self.vel.y != 0:
             self.vel.x *= 0.7071
@@ -98,8 +102,9 @@ class Player(Sprite):
 
 
     def update(self):
+        self.vel = vec(0,0.8)
         self.get_keys()
-        self.animate()
+        
         hits = pg.sprite.spritecollide(self,self.game.all_coins, True) #this hits checks to see if we collided with any coin
         if hits:
             for i in range(10): # we want to spawn 10
@@ -108,8 +113,12 @@ class Player(Sprite):
             self.coins += 1
             self.game.pickup_snd.play() #play the audio 
             self.game.score += 1
+        self.animate()
+        self.acc.x += self.vel.x * self.cofric
+        self.acc.y += self.vel.y * self.cofric
+        self.vel += self.acc 
         self.rect.center = self.pos
-        self.pos += self.vel * self.game.dt #about framerates and updating every frame
+        self.pos += self.vel * self.game.dt  + 0.5 * self.acc #about framerates and updating every frame
         self.hit_rect.centerx = self.pos.x #i believe this begins the collision checking process during the game loop
         collide_with_walls(self, self.game.all_walls, 'x')
         self.hit_rect.centery = self.pos.y
