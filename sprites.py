@@ -65,21 +65,27 @@ class Player(Sprite):
         self.dir = 'none'
         keys = pg.key.get_pressed() 
         if keys[pg.K_LEFT] or keys[pg.K_a]: #the left key
-            self.acc.x = -PLAYER_SPEED
+            self.acc.x = -PLAYER_ACC
+            print('im tryna move')
+            print(self.vel)
+            print(self.acc)
+            print(self.pos)
             #self.vx = -PLAYER_SPEED
         if keys[pg.K_RIGHT] or keys[pg.K_d]:
             self.dir = 'right'
-            self.acc.x = PLAYER_SPEED
+            self.acc.x = PLAYER_ACC
             #self.vx = PLAYER_SPEED
         if keys[pg.K_UP] or keys[pg.K_w]:
-            self.acc.y = -PLAYER_SPEED
+            self.acc.y = -PLAYER_ACC
             #self.vy = -PLAYER_SPEED
         if keys[pg.K_DOWN] or keys[pg.K_s]:
-            self.acc.y = PLAYER_SPEED
+            self.acc.y = PLAYER_ACC
             #self.vy = PLAYER_SPEED
+        if keys[pg.K_SPACE]:
+            self.jump()
         if self.vel.x != 0 and self.vel.y != 0:
-            self.vel.x *= 0.7071
-            self.vel.y *= 0.7071
+            self.vel *= 0.7071
+       
 
     def animate(self):
         #time element used
@@ -99,12 +105,38 @@ class Player(Sprite):
                             self.spritesheet.get_image(TILESIZE,0,TILESIZE,TILESIZE)]
         self.run_frames = [self.spritesheet.get_image(0,0,TILESIZE,TILESIZE),
                            self.spritesheet.get_image(TILESIZE, 0,TILESIZE,TILESIZE)]
+    def jump(self):
+        self.rect.y += 2
+        hits = pg.sprite.spritecollide(self, self.game.all_walls, False)
+        self.rect.y -= 2
+        if hits and not self.is_jumping:
+            self.jumping = True
+            self.vel.y = -PLAYER_JUMP
+    def is_jumping(self):
+        if self.vel.y > 0:
+            hits = pg.sprite.spritecollide(self, self.game.all_walls, False)
+            if hits:
+                self.jumping = False
 
 
     def update(self):
-        self.vel = vec(0,0.8)
-        self.get_keys()
+        self.animate()
+        self.is_jumping()
         
+        
+        self.acc = vec(0, PLAYER_GRAV)
+        self.get_keys()
+
+        self.acc.x += self.vel.x * PLAYER_FRIC
+        self.acc.y +=  self.vel.y * PLAYER_FRIC
+        self.vel += self.acc
+        if abs(self.vel.x) < 0.1:
+            self.vel.x = 0
+        if abs(self.vel.y) < 0.1:
+            self.vel.y = 0
+
+        self.pos += self.vel + 0.5 * self.acc
+
         hits = pg.sprite.spritecollide(self,self.game.all_coins, True) #this hits checks to see if we collided with any coin
         if hits:
             for i in range(10): # we want to spawn 10
@@ -113,16 +145,13 @@ class Player(Sprite):
             self.coins += 1
             self.game.pickup_snd.play() #play the audio 
             self.game.score += 1
-        self.animate()
-        self.acc.x += self.vel.x * self.cofric
-        self.acc.y += self.vel.y * self.cofric
-        self.vel += self.acc 
-        self.rect.center = self.pos
-        self.pos += self.vel * self.game.dt  + 0.5 * self.acc #about framerates and updating every frame
+        
+
         self.hit_rect.centerx = self.pos.x #i believe this begins the collision checking process during the game loop
         collide_with_walls(self, self.game.all_walls, 'x')
         self.hit_rect.centery = self.pos.y
-        collide_with_walls(self,self.game.all_walls, 'y')
+        if collide_with_walls(self,self.game.all_walls, 'y'):
+            self.jumping = False
         self.rect.center = self.hit_rect.center
         
 

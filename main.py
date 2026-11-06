@@ -64,6 +64,7 @@ class Game:
             except:
                 self.high_score = 0
                 print("high score is zero")
+    
     def new(self): #where all our sprites and objects get instantiated and get grouped together so we can give attributes to all of them
         self.load_data('level1.txt')
         self.all_sprites = pg.sprite.Group()
