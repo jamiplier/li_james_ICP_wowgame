@@ -54,6 +54,7 @@ class Player(Sprite):
         self.dir = "none"
         self.coins = 0
         self.cofric = -0.1
+        self.jumping = False
         print('player instantiated')
         print(self.pos)
   
@@ -71,6 +72,7 @@ class Player(Sprite):
             print(self.acc)
             print(self.pos)
             #self.vx = -PLAYER_SPEED
+        #these are all the different keys and outputs for specific inputs
         if keys[pg.K_RIGHT] or keys[pg.K_d]:
             self.dir = 'right'
             self.acc.x = PLAYER_ACC
@@ -99,6 +101,7 @@ class Player(Sprite):
                 self.image = self.idle_frames[self.current_frame]
                 self.image.set_colorkey(BLACK)
                 self.rect = self.image.get_rect()
+                #all of this chunk just makes sure the sprite is alternating frame to frame
                 self.rect.bottom = bottom
     def load_images(self):
         self.idle_frames = [self.spritesheet.get_image(0,0,TILESIZE,TILESIZE), #checks the different locations of the spritesheet to generate animation
@@ -253,8 +256,9 @@ class Mob(Sprite):
             self.vel.y = -self.speed
         else:
             self.vel.y = 0
-
+    #in essence it just checked if the player was to the up down left or right then changed velocity accordingly
     def update(self):
+        #another core loop to have mob constantly chase the player and also collide with wall
         self.animate()
         if self.game.player:
             self.chase(self.game.player)
@@ -286,7 +290,6 @@ class Coin(Sprite):
     def update(self):
         self.rect.x = self.pos.x
         self.rect.y = self.pos.y
-        
-    
+    #altogether pretty barren since most of it is handled with collisions under player class instead
 
 

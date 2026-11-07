@@ -2,15 +2,16 @@ import pygame as pg
 from settings import *
 from math import floor
 
-class Map:
+class Map: #defines a map class that we can use
     def __init__(self,filename):
         self.data = []
         with open(filename, 'rt') as f:
             for line in f:
-                self.data.append(line.strip())
-
+                self.data.append(line.strip()) #checking the file line by line
+        #taking all the data to make cubes
         self.tilewidth = len(self.data[0])
         self.tileheight = len(self.data)
+        #makes sure our walls fit the scale we want in the game
         self.width = self.tilewidth * TILESIZE
         self.height = self.tileheight * TILESIZE
 
@@ -21,12 +22,13 @@ class Spritesheet:
     def get_image(self,x,y,width,height): #gets images from the Spritesheet and scales it correctly so we can draw and use our image from the spritesheet
         image = pg.Surface((width,height))
         image.blit(self.spritesheet, (0,0), (x,y,width,height))
+        #scales our images to the width and the height we want
         new_image = pg.transform.scale(image, (width,height))
         image = new_image
-        return image
+        return image 
 
 
-class Cooldown: # what checks time between different events
+class Cooldown: # what checks time between different events, used by the particles
     def __init__(self):
         self.event_time = 0
         self.current_time  = 0
