@@ -4,6 +4,7 @@ from os import path
 from settings import *
 from utils import *
 from random import randint
+import time
 vec = pg.math.Vector2
 
 def collide_hit_rect(one,two): #checks if one thing is colliding with some other thing
@@ -67,10 +68,6 @@ class Player(Sprite):
         keys = pg.key.get_pressed() 
         if keys[pg.K_LEFT] or keys[pg.K_a]: #the left key
             self.acc.x = -PLAYER_ACC
-            print('im tryna move')
-            print(self.vel)
-            print(self.acc)
-            print(self.pos)
             #self.vx = -PLAYER_SPEED
         #these are all the different keys and outputs for specific inputs
         if keys[pg.K_RIGHT] or keys[pg.K_d]:
@@ -85,6 +82,7 @@ class Player(Sprite):
             #self.vy = PLAYER_SPEED
         if keys[pg.K_SPACE]:
             self.jump()
+
         if self.vel.x != 0 and self.vel.y != 0:
             self.vel *= 0.7071
        
@@ -112,14 +110,22 @@ class Player(Sprite):
         self.rect.y += 2
         hits = pg.sprite.spritecollide(self, self.game.all_walls, False)
         self.rect.y -= 2
-        if hits and not self.is_jumping:
+        if hits and not self.jumping:
+
             self.jumping = True
             self.vel.y = -PLAYER_JUMP
+
     def is_jumping(self):
         if self.vel.y > 0:
+
+            self.rect.y += 2
             hits = pg.sprite.spritecollide(self, self.game.all_walls, False)
+
+            print(self.vel.y, hits, self.jumping)
             if hits:
+                print('is hitting')
                 self.jumping = False
+            self.rect.y -= 2
 
 
     def update(self):
@@ -144,7 +150,7 @@ class Player(Sprite):
         if hits:
             for i in range(10): # we want to spawn 10
                 Particle(self.game, hits[0].pos.x, hits[0].pos.y)
-            print("i've been created")
+
             self.coins += 1
             self.game.pickup_snd.play() #play the audio 
             self.game.score += 1
@@ -193,7 +199,7 @@ class Particle(Sprite):
         #helps us calculate the direction and speed over time to update pos
         if self.countdown.delta > .73: #should the particle stay alive for .73 seconds, we make it disappear by using countdown
             self.kill()
-            print("died")
+
 
         self.rect.x = self.pos.x
         self.rect.y = self.pos.y

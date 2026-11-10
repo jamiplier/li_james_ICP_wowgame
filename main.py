@@ -43,9 +43,11 @@ class Game:
         self.clock = pg.time.Clock()
         self.high_score  = 0
         self.score = 0
+
     def load_data(self,map): #function responsible for opening up paths so we can access all the data
         self.game_dir = path.dirname(__file__)
         self.game_save_file = path.join(self.game_dir, "highscore.txt")
+        
         self.img_dir = path.join(self.game_dir, 'images')#join one path to another
         self.snd_dir = path.join(self.game_dir, 'audio')
         self.pickup_snd = pg.mixer.Sound(path.join(self.snd_dir, "wind1.wav"))
