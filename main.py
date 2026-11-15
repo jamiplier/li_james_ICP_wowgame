@@ -47,7 +47,7 @@ class Game:
     def load_data(self,map): #function responsible for opening up paths so we can access all the data
         self.game_dir = path.dirname(__file__)
         self.game_save_file = path.join(self.game_dir, "highscore.txt")
-        
+
         self.img_dir = path.join(self.game_dir, 'images')#join one path to another
         self.snd_dir = path.join(self.game_dir, 'audio')
         self.pickup_snd = pg.mixer.Sound(path.join(self.snd_dir, "wind1.wav"))
@@ -74,6 +74,7 @@ class Game:
         self.all_mobs = pg.sprite.Group()
         self.all_coins = pg.sprite.Group()
         self.all_particles = pg.sprite.Group()
+        self.all_projectiles = pg.sprite.Group()
         #self.player = Player(self,12,12) 
         #self.cactus = Wall(self,10,10)
         #self.enemy = Mob(self,12,12)
@@ -87,10 +88,10 @@ class Game:
             for col, tile, in enumerate(tiles):
                 if tile == 'P':
                     self.player = Player(self,col,row) #we need this kind of instantiation to access all the variables within
-        for row, tiles in enumerate(self.map.data):
-            for col, tile, in enumerate(tiles):
-                if tile == 'M':
-                    Mob(self,col,row)
+        #for row, tiles in enumerate(self.map.data):
+            #for col, tile, in enumerate(tiles):
+                #if tile == 'M':
+                    #Mob(self,col,row)
         for row, tiles in enumerate(self.map.data):
             for col, tile, in enumerate(tiles):
                 if tile == 'C':
@@ -126,6 +127,10 @@ class Game:
                 if self.playing:
                         self.playing = False #creates a quit mechanism 
                 self.running = False
+            if event.type == pg.MOUSEBUTTONDOWN: #i'll be checking for shooting here. Credit to Stack Overflow for discovering the MOUSTBUTTON DOWN
+                #CS50 helped me discover that event always wipes out the queue when I do get
+                #so I can't call for events in my sprites file, but I can still call them here, and then trigger my shoot method from my instantiated class
+                self.player.shoot()
 
     def draw_text(self,text, size, color, x, y): #a method in which we can print text on the screen with arial font and customizable position and size with the parameters
         font_name = pg.font.match_font('arial')

@@ -6,7 +6,20 @@ from utils import *
 from random import randint
 import time
 vec = pg.math.Vector2
-
+class Projectile(Sprite): #copied a lot of the code from before with using the sprites
+    def __init__(self,game,x,y):
+        self.groups = game.all_sprites, game.all_projectiles
+        Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.image.fill(BLACK)
+        self.rect = self.image.get_rect()
+        self.pos = vec(x, y)
+        #here I realized that when I made my projectile, it always was top hand corner
+        #so, i decided to work through this by setting them equal to each other
+        #CS50 helped a bit witht his process
+        self.rect.x = self.pos.x - 16
+        self.rect.y = self.pos.y - 16
 def collide_hit_rect(one,two): #checks if one thing is colliding with some other thing
     return one.hit_rect.colliderect(two.rect)
 
@@ -74,17 +87,16 @@ class Player(Sprite):
             self.dir = 'right'
             self.acc.x = PLAYER_ACC
             #self.vx = PLAYER_SPEED
-        if keys[pg.K_UP] or keys[pg.K_w]:
-            self.acc.y = -PLAYER_ACC
-            #self.vy = -PLAYER_SPEED
         if keys[pg.K_DOWN] or keys[pg.K_s]:
             self.acc.y = PLAYER_ACC
             #self.vy = PLAYER_SPEED
         if keys[pg.K_SPACE]:
             self.jump()
+        #this is a detection for shooting a projectile
 
-        if self.vel.x != 0 and self.vel.y != 0:
-            self.vel *= 0.7071
+        
+        #if self.vel.x != 0 and self.vel.y != 0:
+            #self.vel *= 0.7071
        
 
     def animate(self):
@@ -107,6 +119,7 @@ class Player(Sprite):
         self.run_frames = [self.spritesheet.get_image(0,0,TILESIZE,TILESIZE),
                            self.spritesheet.get_image(TILESIZE, 0,TILESIZE,TILESIZE)]
     def jump(self):
+        print(self.jumping)
         self.rect.y += 2
         hits = pg.sprite.spritecollide(self, self.game.all_walls, False)
         self.rect.y -= 2
@@ -118,26 +131,28 @@ class Player(Sprite):
     def is_jumping(self):
         if self.vel.y > 0:
 
-            self.rect.y += 2
             hits = pg.sprite.spritecollide(self, self.game.all_walls, False)
 
             print(self.vel.y, hits, self.jumping)
             if hits:
                 print('is hitting')
                 self.jumping = False
-            self.rect.y -= 2
 
-
+    def shoot(self):
+        print('trying to shoot')
+        pro = Projectile(self.game,self.pos.x, self.pos.y)
+        print(pro.rect.x,pro.rect.y)
+        print(self.pos.x, self.pos.y)
     def update(self):
+
         self.animate()
         self.is_jumping()
-        
         
         self.acc = vec(0, PLAYER_GRAV)
         self.get_keys()
 
         self.acc.x += self.vel.x * PLAYER_FRIC
-        self.acc.y +=  self.vel.y * PLAYER_FRIC
+        self.acc.y += self.vel.y * PLAYER_FRIC
         self.vel += self.acc
         if abs(self.vel.x) < 0.1:
             self.vel.x = 0
@@ -162,6 +177,8 @@ class Player(Sprite):
         if collide_with_walls(self,self.game.all_walls, 'y'):
             self.jumping = False
         self.rect.center = self.hit_rect.center
+    
+
         
 
 class Wall(Sprite):
