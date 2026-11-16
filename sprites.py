@@ -4,15 +4,21 @@ from os import path
 from settings import *
 from utils import *
 from random import randint
+import math
 import time
 vec = pg.math.Vector2
 class Projectile(Sprite): #copied a lot of the code from before with using the sprites
-    def __init__(self,game,x,y):
+    def __init__(self,game,x,y,angle):
         self.groups = game.all_sprites, game.all_projectiles
         Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.image = pg.Surface((TILESIZE/8, TILESIZE), pg.SRCALPHA) #the SRCALPHA is an attribute
+        #it allows for parts of my image to be transparent
+        #when I don't have this, my bullet is rotated but there's still a rectangle around to contain it, SRCALPHA can help make it invisible
+        
         self.image.fill(BLACK)
+        #Perplexity AI helped me discover the pg.transform.rotate
+        self.image = pg.transform.rotate(self.image, -angle + 90)
         self.rect = self.image.get_rect()
         self.pos = vec(x, y)
         #here I realized that when I made my projectile, it always was top hand corner
@@ -20,6 +26,15 @@ class Projectile(Sprite): #copied a lot of the code from before with using the s
         #CS50 helped a bit witht his process
         self.rect.x = self.pos.x - 16
         self.rect.y = self.pos.y - 16
+        self.speed = 300
+        #this line was developed with the help of Perplexity
+        #vec set to pointing right (1,0), no upward or downward
+        #rotate via calculated angle will update it
+        self.vel = vec(1,0).rotate(angle) 
+    def update(self):
+        #code from previous classes
+        self.pos += self.vel * self.game.dt * self.speed #actually moves it
+        self.rect.center = self.pos
 def collide_hit_rect(one,two): #checks if one thing is colliding with some other thing
     return one.hit_rect.colliderect(two.rect)
 
@@ -98,7 +113,7 @@ class Player(Sprite):
         #if self.vel.x != 0 and self.vel.y != 0:
             #self.vel *= 0.7071
        
-
+    
     def animate(self):
         #time element used
         now = pg.time.get_ticks()
@@ -139,10 +154,14 @@ class Player(Sprite):
                 self.jumping = False
 
     def shoot(self):
-        print('trying to shoot')
-        pro = Projectile(self.game,self.pos.x, self.pos.y)
-        print(pro.rect.x,pro.rect.y)
-        print(self.pos.x, self.pos.y)
+        posofmouse = pg.mouse.get_pos()
+        #CS50 helped me develop finding the math about the atan
+        #i figured out the exact order via testing different points
+        diffx = posofmouse[0] - self.pos.x
+        diffy = posofmouse[1] - self.pos.y
+        angle = math.degrees(math.atan2(diffy,diffx))
+        pro = Projectile(self.game,self.pos.x, self.pos.y,angle)
+        
     def update(self):
 
         self.animate()
