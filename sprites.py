@@ -18,14 +18,14 @@ class Projectile(Sprite): #copied a lot of the code from before with using the s
         
         self.image.fill(BLACK)
         #Perplexity AI helped me discover the pg.transform.rotate
-        self.image = pg.transform.rotate(self.image, -angle + 90)
+        self.image = pg.transform.rotate(self.image, -angle + 90) #i'm off by 90 so i just moved it
         self.rect = self.image.get_rect()
         self.pos = vec(x, y)
         #here I realized that when I made my projectile, it always was top hand corner
         #so, i decided to work through this by setting them equal to each other
         #CS50 helped a bit witht his process
-        self.rect.x = self.pos.x - 16
-        self.rect.y = self.pos.y - 16
+        self.rect.x = self.pos.x 
+        self.rect.y = self.pos.y
         self.speed = 300
         #this line was developed with the help of Perplexity
         #vec set to pointing right (1,0), no upward or downward
@@ -33,7 +33,7 @@ class Projectile(Sprite): #copied a lot of the code from before with using the s
         self.vel = vec(1,0).rotate(angle) 
     def update(self):
         #code from previous classes
-        self.pos += self.vel * self.game.dt * self.speed #actually moves it
+        self.pos += self.vel * self.game.dt * self.speed #actually moves it to my angle found
         self.rect.center = self.pos
 def collide_hit_rect(one,two): #checks if one thing is colliding with some other thing
     return one.hit_rect.colliderect(two.rect)
@@ -49,17 +49,24 @@ def collide_with_walls(sprite,group,dir):#function because a lotta things will u
                 sprite.pos.x = hits[0].rect.right + sprite.hit_rect.width / 2
             sprite.vel.x = 0
             sprite.hit_rect.centerx = sprite.pos.x
+    #rewritten with help of Perplexity AI
     if dir == 'y':
         hits = pg.sprite.spritecollide(sprite, group, False, collide_hit_rect) #takes 4 args, last thing is a boolean confirming there was a collision
         if hits:
-            #checks to see if we are to the left or right of the wall
-            if hits[0].rect.centery > sprite.hit_rect.centery: #hit[0] > the first thing we hit, what did we just run into
-                sprite.pos.y = hits[0].rect.top - sprite.hit_rect.height / 2 #the core mechanics for collision if collision, then my position of x will reposition
-            if hits[0].rect.centery < sprite.hit_rect.centery:
-                sprite.pos.y = hits[0].rect.bottom + sprite.hit_rect.height / 2
+            landed = False #checking if we are touching the ground
+            if sprite.vel.y > 0: #if i'm falling
+                floor = min(hits, key = lambda wall: wall.rect.top) #lambda is a function. Basically the input is a wall and the output is the top of the wall.
+                #because y increases as you move down, you find the smallest top to find the highest floor to land on
+                sprite.pos.y = (floor.rect.top-sprite.hit_rect.height/2) #to sit on top of a wall/floor, we need to place the center of the character half their height above
+                landed = True
+            elif sprite.vel.y < 0: #ceiling collision
+                ceiling = max(hits, key = lambda wall: wall.rect.bottom) #this is the same thing except we now find the bottom to hit
+                sprite.pos.y = (ceiling.rect.bottom + sprite.hit_rect.height/2) #to hit a ceiling, the center needs to be half the height below
             sprite.vel.y = 0
             sprite.hit_rect.centery = sprite.pos.y
-
+            return landed
+    return False
+        
 class Player(Sprite):
     #defines a player class and initializes it
     def __init__ (self, game,x,y): #init only runs once
@@ -159,13 +166,13 @@ class Player(Sprite):
         #i figured out the exact order via testing different points
         diffx = posofmouse[0] - self.pos.x
         diffy = posofmouse[1] - self.pos.y
-        angle = math.degrees(math.atan2(diffy,diffx))
+        angle = math.degrees(math.atan2(diffy,diffx)) #takes both y and x instead of just one
         pro = Projectile(self.game,self.pos.x, self.pos.y,angle)
         
     def update(self):
 
         self.animate()
-        self.is_jumping()
+
         
         self.acc = vec(0, PLAYER_GRAV)
         self.get_keys()
