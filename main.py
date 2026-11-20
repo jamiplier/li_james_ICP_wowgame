@@ -9,19 +9,41 @@ Process: cursor position, position of the player, score, enemy
 Output: Graphics  Sounds: jump, power up, walking, haptics (controller shaking)
 
 
-Game: CS2
+Name: Freelance
 
-Goals:
-- plant the bomb and make sure it goes off
-- diffuse the bomb
-- eliminate all enemies
+Goals: Defeat the other player with a few different abilities specific to a character to win a round, win two out of three rounds to win the entire match. There will be four characters to choose from.
 
-Rules:
-- cannot leave map
-- cannot see where other players are without audio cues
-- you have to plant the bomb
-- win in thirteen rounds
+Rules: There is a time limit, and if no player is defeated within a three-minute time limit, then the player with more health is awarded only half of a point.
 
+Every character is only constrained to its own characteristics and abilities. For example, double jumping will only be available to two characters.
+
+There is a stamina bar, and characters cannot dash after that bar is depleted.
+
+Feedback of the game:
+
+Players will have a stability bar that refills over time. However, if they are hit by attacks too often the stability bar will deplete and they will be stunned if it runs out.
+
+Landing attacks charges an ultimate bar
+
+All characters will have a health bar that depletes when taking damage
+
+There will be abilities that will be on cooldown after being used.
+
+Freedom: 
+
+The arena is a closed and characters will not be able to run out of bounds.
+
+Players will be able to move anywhere their abilities and movement allow them to as long as it's not outside the map or phasing through a wall.
+
+Mechanics:
+
+The player can jump and move left and right and dash.
+
+They will be able to unleash certain abilities and an ultimate after it is charged and also have unique characteristics.
+
+Each character will have both ranged and melee attacks, with the main weapon being a ranged attack.
+
+Each character will be equipped with a defensive ability that's unique.
 
 '''
 import pygame as pg

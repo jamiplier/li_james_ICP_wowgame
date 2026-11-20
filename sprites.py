@@ -12,13 +12,13 @@ class Projectile(Sprite): #copied a lot of the code from before with using the s
         self.groups = game.all_sprites, game.all_projectiles
         Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pg.Surface((TILESIZE/8, TILESIZE), pg.SRCALPHA) #the SRCALPHA is an attribute
+        self.image = pg.Surface((TILESIZE/8, TILESIZE), pg.SRCALPHA) #the SRCALPHA is an attribute to eliminate the unnecessary parts of the sprite
         #it allows for parts of my image to be transparent
         #when I don't have this, my bullet is rotated but there's still a rectangle around to contain it, SRCALPHA can help make it invisible
         
         self.image.fill(BLACK)
         #Perplexity AI helped me discover the pg.transform.rotate
-        self.image = pg.transform.rotate(self.image, -angle + 90) #i'm off by 90 so i just moved it
+        self.image = pg.transform.rotate(self.image, -angle+90) #i'm off by 90 so i just moved it
         self.rect = self.image.get_rect()
         self.pos = vec(x, y)
         #here I realized that when I made my projectile, it always was top hand corner
@@ -54,7 +54,7 @@ def collide_with_walls(sprite,group,dir):#function because a lotta things will u
         hits = pg.sprite.spritecollide(sprite, group, False, collide_hit_rect) #takes 4 args, last thing is a boolean confirming there was a collision
         if hits:
             landed = False #checking if we are touching the ground
-            if sprite.vel.y > 0: #if i'm falling
+            if sprite.vel.y > 0: #floor collision
                 floor = min(hits, key = lambda wall: wall.rect.top) #lambda is a function. Basically the input is a wall and the output is the top of the wall.
                 #because y increases as you move down, you find the smallest top to find the highest floor to land on
                 sprite.pos.y = (floor.rect.top-sprite.hit_rect.height/2) #to sit on top of a wall/floor, we need to place the center of the character half their height above
@@ -116,7 +116,7 @@ class Player(Sprite):
             self.jump()
         #this is a detection for shooting a projectile
 
-        
+        #commented out because was making my jump shorter when moving left right and jumping
         #if self.vel.x != 0 and self.vel.y != 0:
             #self.vel *= 0.7071
        
@@ -177,7 +177,7 @@ class Player(Sprite):
         self.acc = vec(0, PLAYER_GRAV)
         self.get_keys()
 
-        self.acc.x += self.vel.x * PLAYER_FRIC
+        self.acc.x += self.vel.x * PLAYER_FRIC #friction to slow down the player over time when we stop pressing left right button
         self.acc.y += self.vel.y * PLAYER_FRIC
         self.vel += self.acc
         if abs(self.vel.x) < 0.1:
@@ -185,7 +185,7 @@ class Player(Sprite):
         if abs(self.vel.y) < 0.1:
             self.vel.y = 0
 
-        self.pos += self.vel + 0.5 * self.acc
+        self.pos += self.vel + 0.5 * self.acc #update our position constantly
 
         hits = pg.sprite.spritecollide(self,self.game.all_coins, True) #this hits checks to see if we collided with any coin
         if hits:
@@ -200,10 +200,10 @@ class Player(Sprite):
         self.hit_rect.centerx = self.pos.x #i believe this begins the collision checking process during the game loop
         collide_with_walls(self, self.game.all_walls, 'x')
         self.hit_rect.centery = self.pos.y
-        if collide_with_walls(self,self.game.all_walls, 'y'):
+        if collide_with_walls(self,self.game.all_walls, 'y'): #if we collided, then we know we can jump again
             self.jumping = False
         self.rect.center = self.hit_rect.center
-    
+
 
         
 
@@ -246,7 +246,7 @@ class Particle(Sprite):
 
         self.rect.x = self.pos.x
         self.rect.y = self.pos.y
-class Mob(Sprite):
+class Mob(Sprite): # i don't think i'll be using this at all actually 
     def __init__(self,game,x,y):
         self.groups = game.all_sprites, game.all_mobs
         Sprite.__init__(self,self.groups)
@@ -340,5 +340,5 @@ class Coin(Sprite):
         self.rect.x = self.pos.x
         self.rect.y = self.pos.y
     #altogether pretty barren since most of it is handled with collisions under player class instead
-
+    
 

@@ -33,9 +33,11 @@ class Cooldown: # what checks time between different events, used by the particl
         self.event_time = 0
         self.current_time  = 0
         self.delta = 0
-    def ticking(self):
+    def ticking(self): #counts the time between we start cooldown and the current frame
         self.current_time = pg.time.get_ticks()/1000 #removed the floor so i can do fractional sections, useful for jumping cooldowns
         self.delta = self.current_time - self.event_time #when we check how much time has passed
     def start(self): #start the cooldown
         self.event_time = pg.time.get_ticks() / 1000 #changed because the start time was not the same variable not used
         self.delta = 0
+    #essentially we do cooldown.start to start our cooldown
+    #reset to zero for each time we start
